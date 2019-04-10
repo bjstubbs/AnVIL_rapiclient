@@ -165,7 +165,14 @@ get_operation_definitions <- function(api, path = NULL) {
   ret
 }
 
-
+#' Get required
+#'
+#' Get a list of required elements, allow those to be null.
+#' @param operation
+#' @return a list of required or not for each parameter
+get_required_params<-function(operation){
+	
+}
 
 
 #' Get operations
@@ -226,7 +233,8 @@ get_operations <- function(api, .headers = NULL, path = NULL,
     if (length(formals()) > 0) {
       l1 <- as.list(mget(names(formals()), environment()))
       l1 <- l1[lapply(l1, mode) != "name"]
-      x <- l1[!vapply(l1, is.null, logical(1))]
+      x<-l1
+#  need to allow some nulls:    x <- l1[!vapply(l1, is.null, logical(1))]
     } else {
       x <- list()
     }
@@ -327,11 +335,12 @@ get_message_body <- function(op_def, x) {
   parameter_idx <- vapply(parameters, function(parameter) {
       identical(parameter[["in"]], "body")
   }, logical(1))
-  parameter_name <- parameters[[which(parameter_idx)]][["name"]]
+  parameter_name= sapply(parameters[which(parameter_idx)], function(x){x$name})
+# - now a list: parameter_name <- parameters[which(parameter_idx)][["name"]]
   x <- x[ names(x) %in% parameter_name ]
-  if (length(x))
-    x <- x[[1]]
-  json <- jsonlite::toJSON(x, auto_unbox = TRUE, pretty = TRUE)
+#  - not sure of the goal here: if (length(x))
+#  - ditto:  x <- x[[1]]
+  json <- jsonlite::toJSON(x, auto_unbox = TRUE, pretty = TRUE, null="list")
 
   if(getOption("rapiclient.log_request", default = FALSE)) {
     cat(json, "\n",
