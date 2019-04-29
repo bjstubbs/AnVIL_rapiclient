@@ -233,8 +233,9 @@ get_operations <- function(api, .headers = NULL, path = NULL,
     if (length(formals()) > 0) {
       l1 <- as.list(mget(names(formals()), environment()))
       l1 <- l1[lapply(l1, mode) != "name"]
-      x<-l1
-#  need to allow some nulls:    x <- l1[!vapply(l1, is.null, logical(1))]
+#      x<-l1
+# need to allow some nulls:   
+ x <- l1[!vapply(l1, is.null, logical(1))]
     } else {
       x <- list()
     }
